@@ -30,7 +30,7 @@
 <meta itemprop=name content="2. MapperProxy和MapperMethod">
 <meta itemprop=description content="在MyBatis中MapperProxy通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。 0. Java动态代理 动态代理就是不"><meta itemprop=datePublished content="2021-12-14T00:00:00+00:00">
 <meta itemprop=dateModified content="2021-12-14T00:00:00+00:00">
-<meta itemprop=wordCount content="1791">
+<meta itemprop=wordCount content="1865">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="2. MapperProxy和MapperMethod">
 <meta name=twitter:description content="在MyBatis中MapperProxy通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。 0. Java动态代理 动态代理就是不"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -215,8 +215,9 @@
 <h3 id=12-具体实现>1.2. 具体实现</h3>
 <p><code>MapperProxy</code>的实现比较简单，大致处理逻辑是：</p>
 <ul>
-<li>如果调用的方法是<code>Object</code>中定义的方法或者是被<code>default</code>声明的方法，则直接调用，不进行代理。</li>
-<li>如果是Mapper接口定义的普通方法，就根据Mapper接口、<code>Method</code>、<code>Configuration</code>创建<code>MapperMethod</code>,并调用<code>MapperMethod</code>的<code>execute</code>方法</li>
+<li>如果调用的方法是<code>Object</code>中定义的方法(例如: <code>toString()</code>、<code>equals()</code>)时，就调用<code>MapperProxy</code>中的这些方法；</li>
+<li>如果是<code>default</code>方法，就通过<code>MethodHandle</code>的<code>bindTo</code>将<code>default</code>方法绑定到代理类上执行；</li>
+<li>如果是Mapper接口定义的普通方法，就根据Mapper接口、<code>Method</code>、<code>Configuration</code>创建<code>MapperMethod</code>,并调用<code>MapperMethod</code>的<code>execute</code>方法。</li>
 </ul>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
