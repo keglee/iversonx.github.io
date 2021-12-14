@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title> - Keg - Keg personal blog</title>
+<title>1. MyBatis是如何执行SQL - Keg - Keg personal blog</title>
 <meta name=renderer content="webkit">
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta http-equiv=cache-control content="no-transform">
@@ -11,9 +11,9 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="KEG"><meta name=description content="MyBatis如何执行SQL 在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5"><meta name=keywords content="Hugo,theme,even">
-<meta name=generator content="Hugo 0.90.0 with theme even">
-<link rel=canonical href=https://iversonx.github.io/post/mybatis/mybatis%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8Csql/>
+<meta name=author content="KEG"><meta name=description content="在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5 6 7 8 public static void main(String[] args) { InputStream inputStream = Resources.getResourceAsStream(&amp;#34;mybatis-config.xml&amp;#34;); SqlSessionFactory"><meta name=keywords content="Hugo,theme,even">
+<meta name=generator content="Hugo 0.90.1 with theme even">
+<link rel=canonical href=https://iversonx.github.io/post/mybatis/mybatis%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8Csql/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
 <link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
@@ -21,16 +21,19 @@
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet>
 <link href=/lib/fancybox/jquery.fancybox-3.1.20.min.css rel=stylesheet>
-<meta property="og:title" content>
-<meta property="og:description" content="MyBatis如何执行SQL 在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5">
+<meta property="og:title" content="1. MyBatis是如何执行SQL">
+<meta property="og:description" content="在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5 6 7 8 public static void main(String[] args) { InputStream inputStream = Resources.getResourceAsStream(&#34;mybatis-config.xml&#34;); SqlSessionFactory">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://iversonx.github.io/post/mybatis/mybatis%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8Csql/"><meta property="article:section" content="post">
-<meta itemprop=name content>
-<meta itemprop=description content="MyBatis如何执行SQL 在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5">
-<meta itemprop=wordCount content="607">
+<meta property="og:url" content="https://iversonx.github.io/post/mybatis/mybatis%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8Csql/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-12-13T00:00:00+00:00">
+<meta property="article:modified_time" content="2021-12-13T00:00:00+00:00">
+<meta itemprop=name content="1. MyBatis是如何执行SQL">
+<meta itemprop=description content="在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5 6 7 8 public static void main(String[] args) { InputStream inputStream = Resources.getResourceAsStream(&#34;mybatis-config.xml&#34;); SqlSessionFactory"><meta itemprop=datePublished content="2021-12-13T00:00:00+00:00">
+<meta itemprop=dateModified content="2021-12-13T00:00:00+00:00">
+<meta itemprop=wordCount content="1006">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
-<meta name=twitter:title content>
-<meta name=twitter:description content="MyBatis如何执行SQL 在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:title content="1. MyBatis是如何执行SQL">
+<meta name=twitter:description content="在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5 6 7 8 public static void main(String[] args) { InputStream inputStream = Resources.getResourceAsStream(&#34;mybatis-config.xml&#34;); SqlSessionFactory"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -81,9 +84,9 @@
 <div id=content class=content>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title></h1>
+<h1 class=post-title>1. MyBatis是如何执行SQL</h1>
 <div class=post-meta>
-<span class=post-time> 0001-01-01 </span>
+<span class=post-time> 2021-12-13 </span>
 </div>
 </header>
 <div class=post-toc id=post-toc>
@@ -91,9 +94,9 @@
 <div class="post-toc-content always-active">
 <nav id=TableOfContents>
 <ul>
-<li><a href=#mybatis如何执行sql>MyBatis如何执行SQL</a>
+<li>
 <ul>
-<li><a href=#mapperproxy>MapperProxy</a></li>
+<li><a href=#mybatis中sql的执行流程>Mybatis中SQL的执行流程</a></li>
 </ul>
 </li>
 </ul>
@@ -101,7 +104,6 @@
 </div>
 </div>
 <div class=post-content>
-<h1 id=mybatis如何执行sql>MyBatis如何执行SQL</h1>
 <p>在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -125,18 +127,24 @@
 <span class=o>}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>首先简述一下调用<code>userMapper.getById(4L)</code>时，MyBatis的执行流程：</p>
+</div><h2 id=mybatis中sql的执行流程>Mybatis中SQL的执行流程</h2>
+<p>首先简述一下调用<code>userMapper.getById(4L)</code>时，MyBatis的执行流程：</p>
 <ol>
 <li>当调用<code>userMapper.getById(4L)</code>方法时，会被<code>MapperProxy</code>代理；<code>MapperProxy</code>会根据Mapper接口的<code>Class</code>和方法对应的<code>Method</code>创建<code>MapperMethod</code>实例，并调用<code>MapperMethod</code>的<code>execute</code>方法；</li>
-<li>在<code>MapperMethod</code>的<code>execute</code>方法中根据要执行的SQL语句类型调用<code>SqlSession</code>的对应方法。</li>
-<li>在<code>SqlSession</code>中，会从<code>Configuration</code>对象中获取相应的<code>MappedStatement</code>，并将<code>MappedStatement</code>作为参数，调用<code>Executor</code>的<code>query</code>或<code>update</code>方法</li>
+<li>在<code>MapperMethod</code>的<code>execute</code>方法中根据要执行的SQL语句类型调用<code>SqlSession</code>的对应方法；</li>
+<li>在<code>SqlSession</code>中，会从<code>Configuration</code>对象中获取相应的<code>MappedStatement</code>，并将<code>MappedStatement</code>作为参数，调用<code>Executor</code>的<code>query</code>或<code>update</code>方法；</li>
+<li><code>Executor</code>会创建<code>StatementHandler</code>，并调用<code>StatementHandler</code>来执行<code>Statement</code>；并交给<code>ResultSetHandler</code>来处理结果集。</li>
 </ol>
-<h2 id=mapperproxy>MapperProxy</h2>
-<p><code>MapperProxy</code>用于对所有Mapper接口进行动态代理，所以当调用<code>userMapper.getById(4L)</code>方法时，会被<code>MapperProxy</code>代理；</p>
-<ol>
-<li><code>MapperProxy</code>根据Mapper接口的<code>Class</code>和<code>Method</code>创建<code>MapperMethod</code>实例，并调用<code>MapperMethod#execute</code>；<code>MapperMethod</code>调用<code>SqlSession</code></li>
-<li></li>
-</ol>
+<p>当调用MyBatis Mapper进行数据库操作时，先后经过了：<code>MapperProxy</code>、<code>MapperMethod</code>、<code>SqlSession</code>、<code>MappedStatement</code>、<code>Executor</code>、<code>StatementHandler</code>、<code>ResultSetHandler</code>。下面对这些对象进行说明：</p>
+<ul>
+<li><a href=../mapper_proxy/><code>MapperProxy</code></a>：用于对所有Mapper接口进行动态代理。如果直接使用<code>SqlSession</code>来执行SQL，则不会被<code>MapperProxy</code>代理；</li>
+<li><code>MapperMethod</code>：用于将Mapper方法与MyBatis的映射语句进行关联绑定；</li>
+<li><code>SqlSession</code>：MyBatis的主要接口，用于执行语句、管理事务、获取Mapper；</li>
+<li><code>MappedStatement</code>：用于表示Mybatis的映射语句；</li>
+<li><code>Executor</code>：语句执行器，负责选择如何执行SQL语句、维护缓存、事务管理；</li>
+<li><code>StatementHandler</code>：用于调用JDBC的<code>Statement</code>来执行SQL，以及调用<code>ResultSetHandler</code>来处理结果集</li>
+<li><code>ResultSetHandler</code>：用于对<code>Statement</code>的结果集进行处理，并返回处理后的数据。</li>
+</ul>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -146,12 +154,17 @@
 <p class=copyright-item>
 <span class=item-title>上次更新</span>
 <span class=item-content>
-0001-01-01
+2021-12-13
 </span>
 </p>
 </div>
 <footer class=post-footer>
 <nav class=post-nav>
+<a class=prev href=/post/mybatis/mapper_proxy_method/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">2. MapperProxy和MapperMethod</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
 </nav>
 </footer>
 </article>

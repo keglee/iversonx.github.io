@@ -1,0 +1,456 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>2. MapperProxy和MapperMethod - Keg - Keg personal blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="KEG"><meta name=description content="在MyBatis中MapperProxy通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。 0. Java动态代理 动态代理就是不"><meta name=keywords content="Hugo,theme,even">
+<meta name=generator content="Hugo 0.90.1 with theme even">
+<link rel=canonical href=https://iversonx.github.io/post/mybatis/mapper_proxy_method/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet>
+<link href=/lib/fancybox/jquery.fancybox-3.1.20.min.css rel=stylesheet>
+<meta property="og:title" content="2. MapperProxy和MapperMethod">
+<meta property="og:description" content="在MyBatis中MapperProxy通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。 0. Java动态代理 动态代理就是不">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://iversonx.github.io/post/mybatis/mapper_proxy_method/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-12-14T00:00:00+00:00">
+<meta property="article:modified_time" content="2021-12-14T00:00:00+00:00">
+<meta itemprop=name content="2. MapperProxy和MapperMethod">
+<meta itemprop=description content="在MyBatis中MapperProxy通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。 0. Java动态代理 动态代理就是不"><meta itemprop=datePublished content="2021-12-14T00:00:00+00:00">
+<meta itemprop=dateModified content="2021-12-14T00:00:00+00:00">
+<meta itemprop=wordCount content="1791">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="2. MapperProxy和MapperMethod">
+<meta name=twitter:description content="在MyBatis中MapperProxy通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。 0. Java动态代理 动态代理就是不"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Keg</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>首页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Keg</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>首页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>2. MapperProxy和MapperMethod</h1>
+<div class=post-meta>
+<span class=post-time> 2021-12-14 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#0-java动态代理>0. Java动态代理</a></li>
+<li><a href=#1-mapperproxy>1. MapperProxy</a>
+<ul>
+<li><a href=#11-创建时机>1.1. 创建时机</a></li>
+<li><a href=#12-具体实现>1.2. 具体实现</a></li>
+</ul>
+</li>
+<li><a href=#2-mappermethod>2. MapperMethod</a>
+<ul>
+<li><a href=#21-创建时机>2.1 创建时机</a></li>
+<li><a href=#22-具体实现>2.2 具体实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>在MyBatis中<code>MapperProxy</code>通过Java动态代理的方式来代理Mapper接口，去完成数据库操作。</p>
+<h2 id=0-java动态代理>0. Java动态代理</h2>
+<p>动态代理就是不事先为每个目标类编写代理类，而是在运行时，动态地为目标类创建相应的代理类，并用代理类替换目标类。Java提供动态代理的语法，示例代码如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>interface</span> <span class=nc>UserMapper</span> <span class=o>{</span>
+    <span class=kt>void</span> <span class=nf>show</span><span class=o>();</span>
+<span class=o>}</span>
+
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>UserMapperImpl</span> <span class=kd>extends</span> <span class=n>UserMapper</span> <span class=o>{</span>
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>show</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;===============&#34;</span><span class=o>);</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>DynamicProxy</span> <span class=kd>implements</span> <span class=n>InvocationHandler</span> <span class=o>{</span>
+    
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>Object</span> <span class=n>target</span><span class=o>;</span>
+    <span class=kd>public</span> <span class=nf>DynamicProxy</span><span class=o>(</span><span class=n>Object</span> <span class=n>target</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>target</span> <span class=o>=</span> <span class=n>target</span><span class=o>;</span>
+    <span class=o>}</span>
+    
+    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>newProxy</span><span class=o>(</span><span class=n>Object</span> <span class=n>target</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>target</span> <span class=o>=</span> <span class=n>target</span><span class=o>;</span>
+        <span class=n>ClassLoader</span> <span class=n>classLoader</span> <span class=o>=</span> <span class=n>target</span><span class=o>.</span><span class=na>getClass</span><span class=o>().</span><span class=na>getClassLoader</span><span class=o>();</span>
+        <span class=n>Class</span><span class=o>&lt;?&gt;[]</span> <span class=n>interfaces</span> <span class=o>=</span> <span class=n>target</span><span class=o>.</span><span class=na>getClass</span><span class=o>().</span><span class=na>getInterfaces</span><span class=o>();</span>
+        <span class=k>return</span> <span class=n>Proxy</span><span class=o>.</span><span class=na>newProxyInstance</span><span class=o>(</span><span class=n>classLoader</span><span class=o>,</span> <span class=n>interfaces</span><span class=o>,</span> <span class=k>this</span><span class=o>);</span>
+    <span class=o>}</span>
+    
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>invoke</span><span class=o>(</span><span class=n>Object</span> <span class=n>proxy</span><span class=o>,</span> <span class=n>Method</span> <span class=n>method</span><span class=o>,</span> <span class=n>Object</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>Throwable</span> <span class=o>{</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;======= before proxy ========&#34;</span><span class=o>);</span>
+        <span class=n>Object</span> <span class=n>result</span><span class=o>=</span> <span class=n>method</span><span class=o>.</span><span class=na>invoke</span><span class=o>(</span><span class=n>target</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;======= after proxy ========&#34;</span><span class=o>);</span>
+        <span class=k>return</span> <span class=n>result</span><span class=o>;</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>DynamicProxyDemo</span> <span class=o>{</span>
+    <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>DynamicProxy</span> <span class=n>dynamicProxy</span> <span class=o>=</span> <span class=k>new</span> <span class=n>DynamicProxy</span><span class=o>();</span>
+        <span class=n>UserMapper</span> <span class=n>mapperProxy</span> <span class=o>=</span> <span class=o>(</span><span class=n>UserMapper</span><span class=o>)</span><span class=n>dynamicProxy</span><span class=o>.</span><span class=na>newProxy</span><span class=o>(</span><span class=k>new</span> <span class=n>UserMapperImpl</span><span class=o>());</span>
+        <span class=n>mapperProxy</span><span class=o>.</span><span class=na>show</span><span class=o>();</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>Java动态代理是要基于接口来实现代理，因此被代理类必须是接口实现类。Java动态代理在创建代理对象时，默认让代理对象继承了<code>java.lang.reflect.Proxy</code>，而在Java中的类只能是单继承，所以只能基于接口实现来完成动态代理。</p>
+</blockquote>
+<h2 id=1-mapperproxy>1. MapperProxy</h2>
+<h3 id=11-创建时机>1.1. 创建时机</h3>
+<p>当调用<code>SqlSession</code>的<code>getMapper(Class&lt;T> type)</code>方法时，最终会Mapper接口的<code>Class</code>和<code>SqlSession</code>作为参数转调用<code>MapperRegistry</code>的<code>getMapper(Class&lt;T> type, SqlSession sqlSession)</code>方法。在<code>MapperRegistry</code>的<code>getMapper</code>方法中，先获取Mapper接口对应的<code>MapperProxyFactory</code>，然后通过<code>MapperProxyFactory</code>创建<code>MapperProxy</code>。</p>
+<p><code>MapperRegistry</code>主要功能是将Mapper接口与<code>MapperProxyFactory</code>建立映射关系；<code>MapperProxyFactory</code>是创建<code>MapperProxy</code>的工厂类</p>
+<h3 id=12-具体实现>1.2. 具体实现</h3>
+<p><code>MapperProxy</code>的实现比较简单，大致处理逻辑是：</p>
+<ul>
+<li>如果调用的方法是<code>Object</code>中定义的方法或者是被<code>default</code>声明的方法，则直接调用，不进行代理。</li>
+<li>如果是Mapper接口定义的普通方法，就根据Mapper接口、<code>Method</code>、<code>Configuration</code>创建<code>MapperMethod</code>,并调用<code>MapperMethod</code>的<code>execute</code>方法</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MapperProxy</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=kd>implements</span> <span class=n>InvocationHandler</span><span class=o>,</span> <span class=n>Serializable</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>long</span> <span class=n>serialVersionUID</span> <span class=o>=</span> <span class=o>-</span><span class=n>6424540398559729838L</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>SqlSession</span> <span class=n>sqlSession</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>Class</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>mapperInterface</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>Map</span><span class=o>&lt;</span><span class=n>Method</span><span class=o>,</span> <span class=n>MapperMethod</span><span class=o>&gt;</span> <span class=n>methodCache</span><span class=o>;</span>
+
+    <span class=kd>public</span> <span class=nf>MapperProxy</span><span class=o>(</span><span class=n>SqlSession</span> <span class=n>sqlSession</span><span class=o>,</span> <span class=n>Class</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>mapperInterface</span><span class=o>,</span> <span class=n>Map</span><span class=o>&lt;</span><span class=n>Method</span><span class=o>,</span> <span class=n>MapperMethod</span><span class=o>&gt;</span> <span class=n>methodCache</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>sqlSession</span> <span class=o>=</span> <span class=n>sqlSession</span><span class=o>;</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>mapperInterface</span> <span class=o>=</span> <span class=n>mapperInterface</span><span class=o>;</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>methodCache</span> <span class=o>=</span> <span class=n>methodCache</span><span class=o>;</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>invoke</span><span class=o>(</span><span class=n>Object</span> <span class=n>proxy</span><span class=o>,</span> <span class=n>Method</span> <span class=n>method</span><span class=o>,</span> <span class=n>Object</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>Throwable</span> <span class=o>{</span>
+        <span class=k>try</span> <span class=o>{</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>Object</span><span class=o>.</span><span class=na>class</span><span class=o>.</span><span class=na>equals</span><span class=o>(</span><span class=n>method</span><span class=o>.</span><span class=na>getDeclaringClass</span><span class=o>()))</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>method</span><span class=o>.</span><span class=na>invoke</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>isDefaultMethod</span><span class=o>(</span><span class=n>method</span><span class=o>))</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>invokeDefaultMethod</span><span class=o>(</span><span class=n>proxy</span><span class=o>,</span> <span class=n>method</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+            <span class=o>}</span>
+        <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>Throwable</span> <span class=n>t</span><span class=o>)</span> <span class=o>{</span>
+            <span class=k>throw</span> <span class=n>ExceptionUtil</span><span class=o>.</span><span class=na>unwrapThrowable</span><span class=o>(</span><span class=n>t</span><span class=o>);</span>
+        <span class=o>}</span>
+        <span class=kd>final</span> <span class=n>MapperMethod</span> <span class=n>mapperMethod</span> <span class=o>=</span> <span class=n>cachedMapperMethod</span><span class=o>(</span><span class=n>method</span><span class=o>);</span>
+        <span class=k>return</span> <span class=n>mapperMethod</span><span class=o>.</span><span class=na>execute</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=c1>// 省略cachedMapperMethod、invokeDefaultMethod、isDefaultMethod方法
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=2-mappermethod>2. MapperMethod</h2>
+<h3 id=21-创建时机>2.1 创建时机</h3>
+<p>在<code>MapperProxy</code>中，当执行的是Mapper接口定义的普通方法时，会根据Mapper接口、<code>Method</code>、<code>Configuration</code>创建<code>MapperMethod</code>。</p>
+<h3 id=22-具体实现>2.2 具体实现</h3>
+<p>首先在<code>MapperMethod</code>的构造器中会创建<code>SqlCommand</code>和<code>MethodSignature</code>。</p>
+<p><code>MethodSignature</code>表示方法签名信息。</p>
+<p><code>SqlCommand</code>表示将要执行的SQL命令，有<code>name</code>和<code>SqlCommandType</code>两个属性，<code>name</code>表示Mapper映射文件中对应的<code>statementId</code>，<code>SqlCommandType</code>表示SQL语句类型(<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>SELECT</code>, <code>FLUSH</code>)。</p>
+<blockquote>
+<p><code>statementId</code>即Mapper映射文件中的namespace+标签id，例如<code>com.key.mapper.UserMapper.getById</code></p>
+</blockquote>
+<p>其次在<code>MapperMethod</code>的<code>execute</code>方法中根据<code>SqlCommandType</code>来调用<code>SqlSession</code>的相应方法。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MapperMethod</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>SqlCommand</span> <span class=n>command</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>MethodSignature</span> <span class=n>method</span><span class=o>;</span>
+    <span class=kd>public</span> <span class=nf>MapperMethod</span><span class=o>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span> <span class=n>mapperInterface</span><span class=o>,</span> <span class=n>Method</span> <span class=n>method</span><span class=o>,</span> <span class=n>Configuration</span> <span class=n>config</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>command</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SqlCommand</span><span class=o>(</span><span class=n>config</span><span class=o>,</span> <span class=n>mapperInterface</span><span class=o>,</span> <span class=n>method</span><span class=o>);</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>method</span> <span class=o>=</span> <span class=k>new</span> <span class=n>MethodSignature</span><span class=o>(</span><span class=n>config</span><span class=o>,</span> <span class=n>mapperInterface</span><span class=o>,</span> <span class=n>method</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=n>Object</span> <span class=nf>execute</span><span class=o>(</span><span class=n>SqlSession</span> <span class=n>sqlSession</span><span class=o>,</span> <span class=n>Object</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>Object</span> <span class=n>result</span><span class=o>;</span>
+        <span class=k>switch</span> <span class=o>(</span><span class=n>command</span><span class=o>.</span><span class=na>getType</span><span class=o>())</span> <span class=o>{</span>
+            <span class=k>case</span> <span class=n>INSERT</span><span class=o>:</span> <span class=o>{</span>
+                <span class=n>Object</span> <span class=n>param</span> <span class=o>=</span> <span class=n>method</span><span class=o>.</span><span class=na>convertArgsToSqlCommandParam</span><span class=o>(</span><span class=n>args</span><span class=o>);</span>
+                <span class=n>result</span> <span class=o>=</span> <span class=n>rowCountResult</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>.</span><span class=na>insert</span><span class=o>(</span><span class=n>command</span><span class=o>.</span><span class=na>getName</span><span class=o>(),</span> <span class=n>param</span><span class=o>));</span>
+                <span class=k>break</span><span class=o>;</span>
+            <span class=o>}</span>
+            <span class=k>case</span> <span class=n>UPDATE</span><span class=o>:</span> <span class=o>{</span>
+                <span class=n>Object</span> <span class=n>param</span> <span class=o>=</span> <span class=n>method</span><span class=o>.</span><span class=na>convertArgsToSqlCommandParam</span><span class=o>(</span><span class=n>args</span><span class=o>);</span>
+                <span class=n>result</span> <span class=o>=</span> <span class=n>rowCountResult</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>.</span><span class=na>update</span><span class=o>(</span><span class=n>command</span><span class=o>.</span><span class=na>getName</span><span class=o>(),</span> <span class=n>param</span><span class=o>));</span>
+                <span class=k>break</span><span class=o>;</span>
+            <span class=o>}</span>
+            <span class=k>case</span> <span class=n>DELETE</span><span class=o>:</span> <span class=o>{</span>
+                <span class=n>Object</span> <span class=n>param</span> <span class=o>=</span> <span class=n>method</span><span class=o>.</span><span class=na>convertArgsToSqlCommandParam</span><span class=o>(</span><span class=n>args</span><span class=o>);</span>
+                <span class=n>result</span> <span class=o>=</span> <span class=n>rowCountResult</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>.</span><span class=na>delete</span><span class=o>(</span><span class=n>command</span><span class=o>.</span><span class=na>getName</span><span class=o>(),</span> <span class=n>param</span><span class=o>));</span>
+                <span class=k>break</span><span class=o>;</span>
+            <span class=o>}</span>
+            <span class=k>case</span> <span class=n>SELECT</span><span class=o>:</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>method</span><span class=o>.</span><span class=na>returnsVoid</span><span class=o>()</span> <span class=o>&amp;&amp;</span> <span class=n>method</span><span class=o>.</span><span class=na>hasResultHandler</span><span class=o>())</span> <span class=o>{</span>
+                    <span class=n>executeWithResultHandler</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+                    <span class=n>result</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+                <span class=o>}</span> <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>method</span><span class=o>.</span><span class=na>returnsMany</span><span class=o>())</span> <span class=o>{</span>
+                    <span class=n>result</span> <span class=o>=</span> <span class=n>executeForMany</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+                <span class=o>}</span> <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>method</span><span class=o>.</span><span class=na>returnsMap</span><span class=o>())</span> <span class=o>{</span>
+                    <span class=n>result</span> <span class=o>=</span> <span class=n>executeForMap</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+                <span class=o>}</span> <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>method</span><span class=o>.</span><span class=na>returnsCursor</span><span class=o>())</span> <span class=o>{</span>
+                    <span class=n>result</span> <span class=o>=</span> <span class=n>executeForCursor</span><span class=o>(</span><span class=n>sqlSession</span><span class=o>,</span> <span class=n>args</span><span class=o>);</span>
+                <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+                    <span class=n>Object</span> <span class=n>param</span> <span class=o>=</span> <span class=n>method</span><span class=o>.</span><span class=na>convertArgsToSqlCommandParam</span><span class=o>(</span><span class=n>args</span><span class=o>);</span>
+                    <span class=n>result</span> <span class=o>=</span> <span class=n>sqlSession</span><span class=o>.</span><span class=na>selectOne</span><span class=o>(</span><span class=n>command</span><span class=o>.</span><span class=na>getName</span><span class=o>(),</span> <span class=n>param</span><span class=o>);</span>
+                    <span class=k>if</span> <span class=o>(</span><span class=n>method</span><span class=o>.</span><span class=na>returnsOptional</span><span class=o>()</span>
+                        <span class=o>&amp;&amp;</span> <span class=o>(</span><span class=n>result</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>||</span> <span class=o>!</span><span class=n>method</span><span class=o>.</span><span class=na>getReturnType</span><span class=o>().</span><span class=na>equals</span><span class=o>(</span><span class=n>result</span><span class=o>.</span><span class=na>getClass</span><span class=o>())))</span> <span class=o>{</span>
+                        <span class=n>result</span> <span class=o>=</span> <span class=n>Optional</span><span class=o>.</span><span class=na>ofNullable</span><span class=o>(</span><span class=n>result</span><span class=o>);</span>
+                    <span class=o>}</span>
+                <span class=o>}</span>
+                <span class=k>break</span><span class=o>;</span>
+            <span class=k>case</span> <span class=n>FLUSH</span><span class=o>:</span>
+                <span class=n>result</span> <span class=o>=</span> <span class=n>sqlSession</span><span class=o>.</span><span class=na>flushStatements</span><span class=o>();</span>
+                <span class=k>break</span><span class=o>;</span>
+            <span class=k>default</span><span class=o>:</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>BindingException</span><span class=o>(</span><span class=s>&#34;Unknown execution method for: &#34;</span> <span class=o>+</span> <span class=n>command</span><span class=o>.</span><span class=na>getName</span><span class=o>());</span>
+        <span class=o>}</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>result</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>method</span><span class=o>.</span><span class=na>getReturnType</span><span class=o>().</span><span class=na>isPrimitive</span><span class=o>()</span> <span class=o>&amp;&amp;</span> <span class=o>!</span><span class=n>method</span><span class=o>.</span><span class=na>returnsVoid</span><span class=o>())</span> <span class=o>{</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>BindingException</span><span class=o>(</span><span class=s>&#34;Mapper method &#39;&#34;</span> <span class=o>+</span> <span class=n>command</span><span class=o>.</span><span class=na>getName</span><span class=o>()</span>
+                                       <span class=o>+</span> <span class=s>&#34; attempted to return null from a method with a primitive return type (&#34;</span> <span class=o>+</span> <span class=n>method</span><span class=o>.</span><span class=na>getReturnType</span><span class=o>()</span> <span class=o>+</span> <span class=s>&#34;).&#34;</span><span class=o>);</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=n>result</span><span class=o>;</span>
+    <span class=o>}</span>
+    <span class=c1>// 省略其他方法
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>KEG</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2021-12-14
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<nav class=post-nav>
+<a class=next href=/post/mybatis/mybatis%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8Csql/>
+<span class="next-text nav-default">1. MyBatis是如何执行SQL</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script type=text/javascript src=/lib/jquery/jquery-3.2.1.min.js></script>
+<script type=text/javascript src=/lib/slideout/slideout-1.0.1.min.js></script>
+<script type=text/javascript src=/lib/fancybox/jquery.fancybox-3.1.20.min.js></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>
