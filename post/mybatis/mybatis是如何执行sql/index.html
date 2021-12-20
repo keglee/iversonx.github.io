@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="KEG"><meta name=description content="在使用MyBatis时，我们通常只需调用Mapper接口，MyBatis便会执行相应的SQL语句。例如 1 2 3 4 5 6 7 8 public static void main(String[] args) { InputStream inputStream = Resources.getResourceAsStream(&amp;#34;mybatis-config.xml&amp;#34;); SqlSessionFactory"><meta name=keywords content="Hugo,theme,even">
-<meta name=generator content="Hugo 0.90.1 with theme even">
+<meta name=generator content="Hugo 0.91.0 with theme even">
 <link rel=canonical href=https://iversonx.github.io/post/mybatis/mybatis%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8Csql/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
@@ -138,7 +138,7 @@
 <p>当调用MyBatis Mapper进行数据库操作时，先后经过了：<code>MapperProxy</code>、<code>MapperMethod</code>、<code>SqlSession</code>、<code>MappedStatement</code>、<code>Executor</code>、<code>StatementHandler</code>、<code>ResultSetHandler</code>。下面对这些对象进行说明：</p>
 <ul>
 <li><a href=../mapper_proxy_method/><code>MapperProxy</code></a>：用于对所有Mapper接口进行动态代理。如果直接使用<code>SqlSession</code>来执行SQL，则不会被<code>MapperProxy</code>代理；</li>
-<li><code>MapperMethod</code>：用于将Mapper方法与MyBatis的映射语句进行关联绑定；</li>
+<li><a href=../mapper_proxy_method/><code>MapperMethod</code></a>：用于将Mapper方法与MyBatis的映射语句进行关联绑定；</li>
 <li><code>SqlSession</code>：MyBatis的主要接口，用于执行语句、管理事务、获取Mapper；</li>
 <li><code>MappedStatement</code>：用于表示Mybatis的映射语句；</li>
 <li><code>Executor</code>：语句执行器，负责选择如何执行SQL语句、维护缓存、事务管理；</li>
@@ -162,7 +162,7 @@
 <nav class=post-nav>
 <a class=prev href=/post/mybatis/mapper_proxy_method/>
 <i class="iconfont icon-left"></i>
-<span class="prev-text nav-default">2. MapperProxy和MapperMethod</span>
+<span class="prev-text nav-default">2. MyBatis组件：MapperProxy和MapperMethod</span>
 <span class="prev-text nav-mobile">上一篇</span>
 </a>
 </nav>
