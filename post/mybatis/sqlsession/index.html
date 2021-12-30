@@ -1,0 +1,159 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>3. MyBatis组件：SqlSession - Keg - Keg personal blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="KEG"><meta name=description content="1. SqlSession SqlSession是MyBatis的主要接口。通过SqlSession我们可以执行命令，获取Mapper和管理事务。 MyBatis默认"><meta name=keywords content="Hugo,theme,even">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://iversonx.github.io/post/mybatis/sqlsession/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet>
+<link href=/lib/fancybox/jquery.fancybox-3.1.20.min.css rel=stylesheet>
+<meta property="og:title" content="3. MyBatis组件：SqlSession">
+<meta property="og:description" content="1. SqlSession SqlSession是MyBatis的主要接口。通过SqlSession我们可以执行命令，获取Mapper和管理事务。 MyBatis默认">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://iversonx.github.io/post/mybatis/sqlsession/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-12-20T00:00:00+00:00">
+<meta property="article:modified_time" content="2021-12-20T00:00:00+00:00">
+<meta itemprop=name content="3. MyBatis组件：SqlSession">
+<meta itemprop=description content="1. SqlSession SqlSession是MyBatis的主要接口。通过SqlSession我们可以执行命令，获取Mapper和管理事务。 MyBatis默认"><meta itemprop=datePublished content="2021-12-20T00:00:00+00:00">
+<meta itemprop=dateModified content="2021-12-20T00:00:00+00:00">
+<meta itemprop=wordCount content="363">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="3. MyBatis组件：SqlSession">
+<meta name=twitter:description content="1. SqlSession SqlSession是MyBatis的主要接口。通过SqlSession我们可以执行命令，获取Mapper和管理事务。 MyBatis默认"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Keg</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>首页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Keg</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>首页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>3. MyBatis组件：SqlSession</h1>
+<div class=post-meta>
+<span class=post-time> 2021-12-20 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#1-sqlsession>1. SqlSession</a>
+<ul>
+<li><a href=#11-sqlsession的创建>1.1. SqlSession的创建</a></li>
+<li><a href=#12-具体实现>1.2. 具体实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=1-sqlsession>1. SqlSession</h2>
+<p><code>SqlSession</code>是MyBatis的主要接口。通过<code>SqlSession</code>我们可以执行命令，获取Mapper和管理事务。</p>
+<p>MyBatis默认为<code>SqlSession</code>提供了两个实现:<code>DefaultSqlSession</code>和<code>SqlSessionManager</code>。<code>DefaultSqlSession</code>是<code>SqlSession</code>的默认实现，而<code>SqlSessionManager</code>在源码中并没有使用到。</p>
+<h3 id=11-sqlsession的创建>1.1. SqlSession的创建</h3>
+<p><code>DefaultSqlSession</code>定义了两个<code>final</code>属性<code>Configuration</code>和<code>Executor</code>，因此每次调用<code>DefaultSqlSession</code>的构造方法时，都需要为这两个属性赋值。</p>
+<p>MyBatis为了解耦<code>SqlSession</code>的创建和使用，提供了<code>SqlSessionFactory</code>来创建<code>SqlSession</code>。</p>
+<h3 id=12-具体实现>1.2. 具体实现</h3>
+<ul>
+<li></li>
+</ul>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>KEG</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2021-12-20
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<nav class=post-nav>
+<a class=next href=/post/mybatis/mapper_proxy_method/>
+<span class="next-text nav-default">2. MyBatis组件：MapperProxy和MapperMethod</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script type=text/javascript src=/lib/jquery/jquery-3.2.1.min.js></script>
+<script type=text/javascript src=/lib/slideout/slideout-1.0.1.min.js></script>
+<script type=text/javascript src=/lib/fancybox/jquery.fancybox-3.1.20.min.js></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>
