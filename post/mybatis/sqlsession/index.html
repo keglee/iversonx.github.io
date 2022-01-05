@@ -30,7 +30,7 @@
 <meta itemprop=name content="3. MyBatis组件：SqlSession">
 <meta itemprop=description content="1. SqlSession SqlSession是MyBatis的主要接口。通过SqlSession我们可以执行命令，获取Mapper和管理事务。 MyBatis默认"><meta itemprop=datePublished content="2021-12-20T00:00:00+00:00">
 <meta itemprop=dateModified content="2021-12-20T00:00:00+00:00">
-<meta itemprop=wordCount content="363">
+<meta itemprop=wordCount content="446">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="3. MyBatis组件：SqlSession">
 <meta name=twitter:description content="1. SqlSession SqlSession是MyBatis的主要接口。通过SqlSession我们可以执行命令，获取Mapper和管理事务。 MyBatis默认"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -102,6 +102,7 @@
 <li><a href=#12-具体实现>1.2. 具体实现</a></li>
 </ul>
 </li>
+<li><a href=#待答疑>待答疑</a></li>
 </ul>
 </li>
 </ul>
@@ -113,12 +114,19 @@
 <p><code>SqlSession</code>是MyBatis的主要接口。通过<code>SqlSession</code>我们可以执行命令，获取Mapper和管理事务。</p>
 <p>MyBatis默认为<code>SqlSession</code>提供了两个实现:<code>DefaultSqlSession</code>和<code>SqlSessionManager</code>。<code>DefaultSqlSession</code>是<code>SqlSession</code>的默认实现，而<code>SqlSessionManager</code>在源码中并没有使用到。</p>
 <h3 id=11-sqlsession的创建>1.1. SqlSession的创建</h3>
-<p><code>DefaultSqlSession</code>定义了两个<code>final</code>属性<code>Configuration</code>和<code>Executor</code>，因此每次调用<code>DefaultSqlSession</code>的构造方法时，都需要为这两个属性赋值。</p>
+<p><code>DefaultSqlSession</code>定义了两个<code>final</code>属性<code>Configuration</code>和<code>Executor</code>，因此每次调用<code>DefaultSqlSession</code>的构造方法时，都需要为这两个属性赋值。由于<code>DefaultSqlSession</code>是线程不安全的，因此每次都需要获取一个新的<code>SqlSession</code>。</p>
 <p>MyBatis为了解耦<code>SqlSession</code>的创建和使用，提供了<code>SqlSessionFactory</code>来创建<code>SqlSession</code>。</p>
 <h3 id=12-具体实现>1.2. 具体实现</h3>
 <ul>
-<li></li>
+<li><code>org.apache.ibatis.session.SqlSessionFactory</code></li>
+<li><code>org.apache.ibatis.session.SqlSession</code></li>
+<li><code>org.apache.ibatis.session.defaults.DefaultSqlSessionFactory</code></li>
+<li><code>org.apache.ibatis.session.defaults.DefaultSqlSession</code></li>
 </ul>
+<h2 id=待答疑>待答疑</h2>
+<ol>
+<li><code>DefaultSqlSession</code>为什么线程不安全</li>
+</ol>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -134,6 +142,11 @@
 </div>
 <footer class=post-footer>
 <nav class=post-nav>
+<a class=prev href=/post/mybatis/mappedstatement/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">3. MyBatis组件：MappedStatement</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
 <a class=next href=/post/mybatis/mapper_proxy_method/>
 <span class="next-text nav-default">2. MyBatis组件：MapperProxy和MapperMethod</span>
 <span class="next-text nav-mobile">下一篇</span>

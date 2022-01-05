@@ -1,0 +1,206 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>3. MyBatis组件：MappedStatement - Keg - Keg personal blog</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="KEG"><meta name=description content="1. MappedStatement MappedStatement用于表示Mybatis的映射语句。MappedStatement是final类，其对象是不可变对象。 Map"><meta name=keywords content="Hugo,theme,even">
+<meta name=generator content="Hugo 0.91.2 with theme even">
+<link rel=canonical href=https://iversonx.github.io/post/mybatis/mappedstatement/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet>
+<link href=/lib/fancybox/jquery.fancybox-3.1.20.min.css rel=stylesheet>
+<meta property="og:title" content="3. MyBatis组件：MappedStatement">
+<meta property="og:description" content="1. MappedStatement MappedStatement用于表示Mybatis的映射语句。MappedStatement是final类，其对象是不可变对象。 Map">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://iversonx.github.io/post/mybatis/mappedstatement/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2022-01-05T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-01-05T00:00:00+00:00">
+<meta itemprop=name content="3. MyBatis组件：MappedStatement">
+<meta itemprop=description content="1. MappedStatement MappedStatement用于表示Mybatis的映射语句。MappedStatement是final类，其对象是不可变对象。 Map"><meta itemprop=datePublished content="2022-01-05T00:00:00+00:00">
+<meta itemprop=dateModified content="2022-01-05T00:00:00+00:00">
+<meta itemprop=wordCount content="509">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="3. MyBatis组件：MappedStatement">
+<meta name=twitter:description content="1. MappedStatement MappedStatement用于表示Mybatis的映射语句。MappedStatement是final类，其对象是不可变对象。 Map"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Keg</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>首页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Keg</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>首页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>3. MyBatis组件：MappedStatement</h1>
+<div class=post-meta>
+<span class=post-time> 2022-01-05 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#1-mappedstatement>1. MappedStatement</a>
+<ul>
+<li><a href=#11-mappedstatement的创建>1.1. MappedStatement的创建</a></li>
+<li><a href=#12-具体实现>1.2. 具体实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=1-mappedstatement>1. MappedStatement</h2>
+<p><code>MappedStatement</code>用于表示Mybatis的映射语句。<code>MappedStatement</code>是<code>final</code>类，其对象是不可变对象。</p>
+<p><code>MappedStatement</code>的对象在创建好之后，其属性值不能发生改变，因此<code>MappedStatement</code>只有getter方法，并使用Builder模式来构造<code>MappedStatement</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>final</span> <span class=kd>class</span> <span class=nc>MappedStatement</span> <span class=o>{</span>
+    <span class=c1>// 语句所处位置, 例如: mapper/**Mapper.xml
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>String</span> <span class=n>resource</span><span class=o>;</span>
+    <span class=c1>// 全局配置对象
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>Configuration</span> <span class=n>configuration</span><span class=o>;</span>
+    <span class=c1>// 唯一标识
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>String</span> <span class=n>id</span><span class=o>;</span>
+    <span class=c1>// 语句类型
+</span><span class=c1></span>  	<span class=kd>private</span> <span class=n>StatementType</span> <span class=n>statementType</span><span class=o>;</span>
+    <span class=c1>// 结果集类型
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>ResultSetType</span> <span class=n>resultSetType</span><span class=o>;</span>
+    <span class=c1>// 对应的sql语句
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>SqlSource</span> <span class=n>sqlSource</span><span class=o>;</span>
+    <span class=c1>// 参数映射
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>ParameterMap</span> <span class=n>parameterMap</span><span class=o>;</span>
+    <span class=c1>// 结果映射
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>ResultMap</span><span class=o>&gt;</span> <span class=n>resultMaps</span><span class=o>;</span>
+    <span class=c1>// sql类型: INSERT, SELECT等
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>SqlCommandType</span> <span class=n>sqlCommandType</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=n>KeyGenerator</span> <span class=n>keyGenerator</span><span class=o>;</span>
+    <span class=c1>// 省略其他属性
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=11-mappedstatement的创建>1.1. MappedStatement的创建</h3>
+<p>当使用<code>SqlSessionFactoryBuilder.build</code>方法构建<code>SqlSessionFactory</code>时，会创建<code>XMLConfigBuilder</code>实例，并调用<code>XMLConfigBuilder</code>的<code>parse</code>方法来解析配置文件和映射文件。</p>
+<p>会触发对MyBatis配置文件和映射文件的解析。在解析映射文件的每一个映射语句时，根据映射语句配置信息创建对应的<code>MappedStatement</code>。</p>
+<h3 id=12-具体实现>1.2. 具体实现</h3>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>KEG</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2022-01-05
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<nav class=post-nav>
+<a class=next href=/post/mybatis/sqlsession/>
+<span class="next-text nav-default">3. MyBatis组件：SqlSession</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script type=text/javascript src=/lib/jquery/jquery-3.2.1.min.js></script>
+<script type=text/javascript src=/lib/slideout/slideout-1.0.1.min.js></script>
+<script type=text/javascript src=/lib/fancybox/jquery.fancybox-3.1.20.min.js></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>
