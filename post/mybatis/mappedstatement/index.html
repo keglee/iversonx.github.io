@@ -30,7 +30,7 @@
 <meta itemprop=name content="3. MyBatis组件：MappedStatement">
 <meta itemprop=description content="1. MappedStatement MappedStatement用于表示Mybatis的映射语句。MappedStatement是final类，其对象是不可变对象。 Map"><meta itemprop=datePublished content="2022-01-05T00:00:00+00:00">
 <meta itemprop=dateModified content="2022-01-05T00:00:00+00:00">
-<meta itemprop=wordCount content="509">
+<meta itemprop=wordCount content="669">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="3. MyBatis组件：MappedStatement">
 <meta name=twitter:description content="1. MappedStatement MappedStatement用于表示Mybatis的映射语句。MappedStatement是final类，其对象是不可变对象。 Map"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -163,9 +163,17 @@
 </code></pre></td></tr></table>
 </div>
 </div><h3 id=11-mappedstatement的创建>1.1. MappedStatement的创建</h3>
-<p>当使用<code>SqlSessionFactoryBuilder.build</code>方法构建<code>SqlSessionFactory</code>时，会创建<code>XMLConfigBuilder</code>实例，并调用<code>XMLConfigBuilder</code>的<code>parse</code>方法来解析配置文件和映射文件。</p>
-<p>会触发对MyBatis配置文件和映射文件的解析。在解析映射文件的每一个映射语句时，根据映射语句配置信息创建对应的<code>MappedStatement</code>。</p>
+<p><code>MappedStatement</code>是在解析MyBatis配置文件和映射文件时被创建，并添加到<code>Configuration</code>对象的<code>mappedStatements</code>属性中。通常情况下应用服务在启动时完成MyBatis配置文件和映射文件的解析。</p>
+<p>当使用<code>SqlSessionFactoryBuilder.build</code>方法构建<code>SqlSessionFactory</code>时，会创建<code>XMLConfigBuilder</code>实例，并调用<code>XMLConfigBuilder</code>的<code>parse</code>方法来解析配置文件和映射文件。在解析映射文件的<code>select|insert|update|delete</code>节点时，会遍历调用<code>MapperBuilderAssistant.addMappedStatement</code>为映射语句构建对应的<code>MappedStatement</code>。</p>
 <h3 id=12-具体实现>1.2. 具体实现</h3>
+<ul>
+<li><code>org.apache.ibatis.session.SqlSessionFactoryBuilder#build</code></li>
+<li><code>org.apache.ibatis.builder.xml.XMLConfigBuilder#mapperElement</code></li>
+<li><code>org.apache.ibatis.builder.xml.XMLMapperBuilder#parse</code></li>
+<li><code>org.apache.ibatis.builder.xml.XMLMapperBuilder#buildStatementFromContext</code></li>
+<li><code>org.apache.ibatis.builder.xml.XMLStatementBuilder#parseStatementNode</code></li>
+<li><code>org.apache.ibatis.builder.MapperBuilderAssistant#addMappedStatement</code></li>
+</ul>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
